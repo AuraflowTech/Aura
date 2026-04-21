@@ -186,127 +186,126 @@ export default function AuraApp() {
         )}
 
         {activeTab === 'manage' && (
-          <div className="flex flex-col md:flex-row gap-6 w-full max-w-3xl">
-            {/* ZELENÁ SEKCE: PŘIDÁNÍ */}
-            <div
-              className={`${
-                darkMode
-                  ? 'bg-[#1a1d23] border-gray-800'
-                  : 'bg-white border-gray-100 shadow-lg'
-              } flex-1 p-6 rounded-2xl border`}
-            >
-              <h2 className="text-sm font-black mb-4 uppercase tracking-widest text-emerald-500">
-                {t[lang].addTitle}
-              </h2>
-              <div className="space-y-3 text-left">
-                <div>
-                  <label className="text-[8px] font-black text-gray-500 uppercase ml-1">
-                    {t[lang].nameLabel}
-                  </label>
-                  <input
-                    type="text"
-                    className={`w-full p-2 mt-0.5 rounded-lg outline-none border focus:ring-1 focus:ring-emerald-500 ${
-                      darkMode
-                        ? 'bg-[#0f1115] border-gray-700 text-white'
-                        : 'bg-gray-50 border-gray-200 text-black'
-                    }`}
-                    value={newLabel}
-                    onChange={(e) => setNewLabel(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="text-[8px] font-black text-gray-500 uppercase ml-1">
-                    {t[lang].urlLabel}
-                  </label>
-                  <input
-                    type="text"
-                    className={`w-full p-2 mt-0.5 rounded-lg outline-none border focus:ring-1 focus:ring-emerald-500 ${
-                      darkMode
-                        ? 'bg-[#0f1115] border-gray-700 text-white'
-                        : 'bg-gray-50 border-gray-200 text-black'
-                    }`}
-                    value={newUrl}
-                    onChange={(e) => setNewUrl(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="text-[8px] font-black text-gray-500 uppercase ml-1">
-                    {t[lang].descLabel}
-                  </label>
-                  <input
-                    type="text"
-                    className={`w-full p-2 mt-0.5 rounded-lg outline-none border focus:ring-1 focus:ring-emerald-500 ${
-                      darkMode
-                        ? 'bg-[#0f1115] border-gray-700 text-white'
-                        : 'bg-gray-50 border-gray-200 text-black'
-                    }`}
-                    value={newDesc}
-                    onChange={(e) => setNewDesc(e.target.value)}
-                  />
-                </div>
-                <button
-                  onClick={addLink}
-                  className="w-full bg-emerald-600 text-white p-2 rounded-lg font-black hover:bg-emerald-700 transition-all mt-2 text-[9px] uppercase italic shadow-md shadow-emerald-900/20"
-                >
-                  {t[lang].addBtn}
-                </button>
-              </div>
-            </div>
-
-            {/* ORANŽOVÁ SEKCE: SEZNAM */}
-            <div
-              className={`${
-                darkMode
-                  ? 'bg-[#1a1d23] border-gray-800'
-                  : 'bg-white border-gray-100 shadow-lg'
-              } flex-1 p-6 rounded-2xl border`}
-            >
-              <h2 className="text-sm font-black mb-4 uppercase tracking-widest text-orange-500">
-                {t[lang].listTitle}
-              </h2>
-              <div className="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
-                {links.map((link) => (
-                  <div
-                    key={link.id}
-                    className={`flex items-center justify-between p-2 rounded-lg border ${
-                      darkMode
-                        ? 'bg-[#0f1115] border-gray-800'
-                        : 'bg-gray-50 border-gray-100'
-                    }`}
-                  >
-                    <span className="font-bold text-[10px] truncate max-w-[120px]">
-                      {link.label}
-                    </span>
-                    <button
-                      onClick={() => deleteLink(link.id)}
-                      className="bg-orange-500/10 hover:bg-orange-500 text-orange-600 hover:text-white p-1 px-2 rounded-md transition-all text-[8px] font-black uppercase border border-orange-500/20 hover:border-orange-500"
-                    >
-                      DEL ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-6 animate-fade-in pb-12">
+          <div className="flex flex-col items-center w-full max-w-4xl mx-auto animate-fade-in pb-12">
+            {/* KONTEJNER PRO KARTY: Na PC vedle sebe, na mobilu pod sebou */}
+            <div className="flex flex-col md:flex-row gap-6 w-full max-w-3xl">
               
-              {/* ... tvůj stávající kód (přidávání karet, seznam karet atd.) ... */}
-
-              {/* --- TADY ZAČÍNÁ INDIKÁTOR VERZE --- */}
-              <div className="pt-8 mt-12 border-t border-gray-800/50 flex flex-col items-center">
-                <div className="flex items-center space-x-2 bg-gray-900/50 px-3 py-1 rounded-full border border-gray-800">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                  <span className="text-[10px] font-mono text-gray-500 tracking-tighter uppercase">
-                    Build: Production
-                  </span>
-                  <span className="text-[10px] font-black text-emerald-500/70 ml-2">
-                    v1.0
-                  </span>
+              {/* ZELENÁ SEKCE: PŘIDÁNÍ */}
+              <div
+                className={`${
+                  darkMode
+                    ? 'bg-[#1a1d23] border-gray-800'
+                    : 'bg-white border-gray-100 shadow-lg'
+                } flex-1 p-6 rounded-2xl border`}
+              >
+                <h2 className="text-sm font-black mb-4 uppercase tracking-widest text-emerald-500">
+                  {t[lang].addTitle}
+                </h2>
+                <div className="space-y-3 text-left">
+                  <div>
+                    <label className="text-[8px] font-black text-gray-500 uppercase ml-1">
+                      {t[lang].nameLabel}
+                    </label>
+                    <input
+                      type="text"
+                      className={`w-full p-2 mt-0.5 rounded-lg outline-none border focus:ring-1 focus:ring-emerald-500 ${
+                        darkMode
+                          ? 'bg-[#0f1115] border-gray-700 text-white'
+                          : 'bg-gray-50 border-gray-200 text-black'
+                      }`}
+                      value={newLabel}
+                      onChange={(e) => setNewLabel(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[8px] font-black text-gray-500 uppercase ml-1">
+                      {t[lang].urlLabel}
+                    </label>
+                    <input
+                      type="text"
+                      className={`w-full p-2 mt-0.5 rounded-lg outline-none border focus:ring-1 focus:ring-emerald-500 ${
+                        darkMode
+                          ? 'bg-[#0f1115] border-gray-700 text-white'
+                          : 'bg-gray-50 border-gray-200 text-black'
+                      }`}
+                      value={newUrl}
+                      onChange={(e) => setNewUrl(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[8px] font-black text-gray-500 uppercase ml-1">
+                      {t[lang].descLabel}
+                    </label>
+                    <input
+                      type="text"
+                      className={`w-full p-2 mt-0.5 rounded-lg outline-none border focus:ring-1 focus:ring-emerald-500 ${
+                        darkMode
+                          ? 'bg-[#0f1115] border-gray-700 text-white'
+                          : 'bg-gray-50 border-gray-200 text-black'
+                      }`}
+                      value={newDesc}
+                      onChange={(e) => setNewDesc(e.target.value)}
+                    />
+                  </div>
+                  <button
+                    onClick={addLink}
+                    className="w-full bg-emerald-600 text-white p-2 rounded-lg font-black hover:bg-emerald-700 transition-all mt-2 text-[9px] uppercase italic shadow-md shadow-emerald-900/20"
+                  >
+                    {t[lang].addBtn}
+                  </button>
                 </div>
-                <p className="text-[8px] text-gray-600 mt-2 uppercase tracking-[0.2em] font-bold">
-                  Aura OS • 2024
-                </p>
               </div>
-              {/* --- TADY KONČÍ INDIKÁTOR VERZE --- */}
+
+              {/* ORANŽOVÁ SEKCE: SEZNAM */}
+              <div
+                className={`${
+                  darkMode
+                    ? 'bg-[#1a1d23] border-gray-800'
+                    : 'bg-white border-gray-100 shadow-lg'
+                } flex-1 p-6 rounded-2xl border`}
+              >
+                <h2 className="text-sm font-black mb-4 uppercase tracking-widest text-orange-500">
+                  {t[lang].listTitle}
+                </h2>
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+                  {links.map((link) => (
+                    <div
+                      key={link.id}
+                      className={`flex items-center justify-between p-2 rounded-lg border ${
+                        darkMode
+                          ? 'bg-[#0f1115] border-gray-800'
+                          : 'bg-gray-50 border-gray-100'
+                      }`}
+                    >
+                      <span className="font-bold text-[10px] truncate max-w-[120px]">
+                        {link.label}
+                      </span>
+                      <button
+                        onClick={() => deleteLink(link.id)}
+                        className="bg-orange-500/10 hover:bg-orange-500 text-orange-600 hover:text-white p-1 px-2 rounded-md transition-all text-[8px] font-black uppercase border border-orange-500/20 hover:border-orange-500"
+                      >
+                        DEL ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* SEPARÁTNÍ SEKCE PRO VERZI: Teď je pod oběma boxy a vycentrovaná */}
+            <div className="w-full max-w-md pt-8 mt-12 border-t border-gray-800/50 flex flex-col items-center">
+              <div className="flex items-center space-x-2 bg-gray-900/50 px-3 py-1 rounded-full border border-gray-800">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span className="text-[10px] font-mono text-gray-500 tracking-tighter uppercase">
+                  Build: Production
+                </span>
+                <span className="text-[10px] font-black text-emerald-500/70 ml-2">
+                  v1.0
+                </span>
+              </div>
+              <p className="text-[8px] text-gray-600 mt-2 uppercase tracking-[0.2em] font-bold">
+                Aura OS • 2024
+              </p>
             </div>
           </div>
         )}
