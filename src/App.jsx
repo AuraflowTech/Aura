@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import { LogIn } from 'lucide-react';
+import { LogIn, LogOut, Sun, Moon, Globe } from 'lucide-react';
 
 export default function AuraApp() {
   const [activeTab, setActiveTab] = useState('links');
@@ -11,24 +11,29 @@ export default function AuraApp() {
   const adminPassword = 'admin'; 
   const [session, setSession] = useState(null);
 
-  // --- AUTH LOGIKA ---
+  // --- 1. AUTH LOGIKA S DIAGNOSTIKOU ---
   useEffect(() => {
+    // Kontrola aktuální session při načtení
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("AURA DEBUG: Aktuální session při startu:", session);
       setSession(session);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Sledování změn (přihlášení, odhlášení)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("AURA DEBUG: Událost:", event, "Data:", session);
       setSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Tady to napiš natvrdo bez proměnných:
         redirectTo: 'https://workflowaura.netlify.app',
         queryParams: {
           access_type: 'offline',
@@ -39,7 +44,12 @@ export default function AuraApp() {
     if (error) console.error("Login error:", error.message);
   };
 
-  // --- LOKÁLNÍ STAV ODKAZŮ ---
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) console.error("Logout error:", error.message);
+  };
+
+  // --- 2. LOKÁLNÍ STAV ODKAZŮ + AUTO-SAVE ---
   const [links, setLinks] = useState(() => {
     const saved = localStorage.getItem('aura-links');
     return saved ? JSON.parse(saved) : [
@@ -48,24 +58,9 @@ export default function AuraApp() {
     ];
   });
 
-  // --- AUTH LOGIKA S DIAGNOSTIKOU ---
   useEffect(() => {
-    // 1. Zkontrolujeme session hned po načtení
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("AURA DEBUG: Aktuální session při startu:", session);
-      setSession(session);
-    });
-
-    // 2. Sledujeme změny (přihlášení, odhlášení, vypršení tokenu)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("AURA DEBUG: Událost:", event, "Data:", session);
-      setSession(session);
-    });
-
-    return () => {
-      if (subscription) subscription.unsubscribe();
-    };
-  }, []);
+    localStorage.setItem('aura-links', JSON.stringify(links));
+  }, [links]);
 
   const [newLabel, setNewLabel] = useState('');
   const [newUrl, setNewUrl] = useState('');
@@ -87,6 +82,7 @@ export default function AuraApp() {
 
   const deleteLink = (id) => setLinks(links.filter((link) => link.id !== id));
 
+  // --- 3. PŘEKLADY ---
   const t = {
     CZ: {
       tabs: ['odkazy', 'správa', 'admin', 'feedback'],
@@ -114,7 +110,7 @@ export default function AuraApp() {
     },
   };
 
-  // --- AUTH GUARD ---
+  // --- 4. AUTH GUARD (LOGIN SCREEN) ---
   if (!session) {
     return (
       <div className={`min-h-screen flex items-center justify-center transition-colors duration-500 ${darkMode ? 'bg-[#0f1115]' : 'bg-gray-50'}`}>
@@ -130,18 +126,24 @@ export default function AuraApp() {
     );
   }
 
-  // --- HLAVNÍ DASHBOARD ---
+  // --- 5. HLAVNÍ DASHBOARD ---
   return (
     <div className={`min-h-screen transition-colors duration-500 ${darkMode ? 'bg-[#0f1115] text-white' : 'bg-gray-50 text-gray-900'} p-6 font-sans text-xs`}>
       <header className="max-w-4xl mx-auto mb-6 relative flex flex-col items-center text-center">
         <div className="absolute top-0 right-0 flex flex-col space-y-2">
-          <button onClick={() => setDarkMode(!darkMode)} className={`p-2 rounded-xl border ${darkMode ? 'bg-[#1a1d23] border-gray-800' : 'bg-white border-gray-200'}`}>{darkMode ? '☀️' : '🌙'}</button>
-          <button onClick={() => setLang(lang === 'CZ' ? 'EN' : 'CZ')} className={`p-2 rounded-xl border font-black text-[9px] ${darkMode ? 'bg-[#1a1d23] border-gray-800' : 'bg-white border-gray-200'}`}>{lang}</button>
-          <button onClick={handleLogout} className="p-2 rounded-xl border bg-red-500/10 border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[9px]">🚪</button>
+          <button onClick={() => setDarkMode(!darkMode)} className={`p-2 rounded-xl border ${darkMode ? 'bg-[#1a1d23] border-gray-800' : 'bg-white border-gray-200'}`}>
+            {darkMode ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
+          <button onClick={() => setLang(lang === 'CZ' ? 'EN' : 'CZ')} className={`p-2 rounded-xl border flex items-center gap-1 font-black text-[9px] ${darkMode ? 'bg-[#1a1d23] border-gray-800' : 'bg-white border-gray-200'}`}>
+            <Globe size={12} /> {lang}
+          </button>
+          <button onClick={handleLogout} className="p-2 rounded-xl border bg-red-500/10 border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[9px]">
+            <LogOut size={14} />
+          </button>
         </div>
         <div className="mt-4 mb-2"><img src="/logo_nobg.png" alt="Logo" className="h-12 w-auto" /></div>
         <p className={`${darkMode ? 'text-gray-600' : 'text-gray-400'} uppercase tracking-[0.25em] text-[8px] font-black italic`}>
-          USER: {session.user.email.split('@')[0].toUpperCase()}
+          USER: {session.user?.email?.split('@')[0].toUpperCase() || 'UNKNOWN'}
         </p>
       </header>
 
@@ -157,11 +159,10 @@ export default function AuraApp() {
       </nav>
 
       <main className="max-w-4xl mx-auto flex justify-center">
-        {/* TAB ODKAZY */}
         {activeTab === 'links' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-2xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-2xl animate-fade-in">
             {links.map((link) => (
-              <a key={link.id} href={link.url} target="_blank" rel="noreferrer" className={`${darkMode ? 'bg-[#1a1d23] border-gray-800' : 'bg-white border-gray-100'} p-1.5 px-4 rounded-lg transition-all flex items-center space-x-3 border hover:scale-[1.02]`}>
+              <a key={link.id} href={link.url} target="_blank" rel="noreferrer" className={`${darkMode ? 'bg-[#1a1d23] border-gray-800' : 'bg-white border-gray-100'} p-1.5 px-4 rounded-lg transition-all flex items-center space-x-3 border hover:scale-[1.02] shadow-sm`}>
                 <div className={`w-1 h-5 ${link.color} rounded-full`}></div>
                 <div className="text-left overflow-hidden">
                   <h3 className="text-sm font-bold truncate">{link.label}</h3>
@@ -172,9 +173,8 @@ export default function AuraApp() {
           </div>
         )}
 
-        {/* TAB SPRÁVA */}
         {activeTab === 'manage' && (
-          <div className="flex flex-col md:flex-row gap-6 w-full max-w-3xl animate-fade-in">
+          <div className="flex flex-col md:flex-row gap-6 w-full max-w-3xl">
             <div className={`${darkMode ? 'bg-[#1a1d23] border-gray-800' : 'bg-white shadow-lg'} flex-1 p-6 rounded-2xl border`}>
               <h2 className="text-sm font-black mb-4 uppercase text-emerald-500">{t[lang].addTitle}</h2>
               <div className="space-y-3">
@@ -198,7 +198,6 @@ export default function AuraApp() {
           </div>
         )}
 
-        {/* TAB ADMIN */}
         {activeTab === 'admin' && (
           <div className="w-full max-w-sm mx-auto">
             {!isAdmin ? (
@@ -216,7 +215,6 @@ export default function AuraApp() {
           </div>
         )}
 
-        {/* TAB FEEDBACK */}
         {activeTab === 'feedback' && <div className="py-16 text-gray-500 italic font-black uppercase">{t[lang].feedbackOffline}</div>}
       </main>
     </div>
