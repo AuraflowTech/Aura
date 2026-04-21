@@ -28,15 +28,15 @@ export default function AuraApp() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // Tohle zajistí, že se vrátíš přesně tam, kde jsi teď
-        redirectTo: window.location.origin 
-      }
+        // Tady to napiš natvrdo bez proměnných:
+        redirectTo: 'https://workflowaura.netlify.app',
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
     });
-    if (error) console.error("Auth error:", error.message);
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+    if (error) console.error("Login error:", error.message);
   };
 
   // --- LOKÁLNÍ STAV ODKAZŮ ---
