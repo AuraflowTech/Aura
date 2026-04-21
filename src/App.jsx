@@ -48,9 +48,24 @@ export default function AuraApp() {
     ];
   });
 
+  // --- AUTH LOGIKA S DIAGNOSTIKOU ---
   useEffect(() => {
-    localStorage.setItem('aura-links', JSON.stringify(links));
-  }, [links]);
+    // 1. Zkontrolujeme session hned po načtení
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("AURA DEBUG: Aktuální session při startu:", session);
+      setSession(session);
+    });
+
+    // 2. Sledujeme změny (přihlášení, odhlášení, vypršení tokenu)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("AURA DEBUG: Událost:", event, "Data:", session);
+      setSession(session);
+    });
+
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, []);
 
   const [newLabel, setNewLabel] = useState('');
   const [newUrl, setNewUrl] = useState('');
